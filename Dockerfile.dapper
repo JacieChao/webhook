@@ -10,7 +10,7 @@ RUN if [ "${ARCH}" = "amd64" ]; then \
 RUN curl -sL https://get.helm.sh/helm-v3.8.0-linux-${ARCH}.tar.gz | tar xvzf - -C /usr/local/bin --strip-components=1
 RUN GOBIN=/usr/local/bin go install github.com/golang/mock/mockgen@v1.6.0
 
-ENV DAPPER_ENV REPO TAG DRONE_TAG CROSS
+ENV DAPPER_ENV REPO TAG DRONE_TAG CROSS OAUTH_TOKEN
 ENV DAPPER_SOURCE /go/src/github.com/rancher/webhook/
 ENV DAPPER_OUTPUT ./bin ./dist
 ENV DAPPER_DOCKER_SOCKET true

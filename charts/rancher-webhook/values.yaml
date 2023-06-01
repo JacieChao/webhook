@@ -1,5 +1,5 @@
 image:
-  repository: rancher/rancher-webhook
+  repository: cnrancher/rancher-webhook
   tag: latest
   imagePullPolicy: IfNotPresent
 
