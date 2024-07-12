@@ -20,12 +20,15 @@ steps:
         path: /var/run/docker.sock
 
   - name: integration-test
-    image: rancher/rancher:v2.9-head
-    pull: always
+    image: rancher/dapper:v0.6.0
     privileged: true
     commands:
       - curl --cacert /etc/ssl/ca-bundle.pem -sL https://get.helm.sh/helm-v3.13.3-linux-amd64.tar.gz | tar xvzf - -C /usr/local/bin --strip-components=1
+      - curl -sL https://dl.k8s.io/v1.28.11/kubernetes-client-linux-amd64.tar.gz | tar xvzf - -C /usr/local/bin --strip-components=3
       - scripts/integration-test
+    volumes:
+      - name: docker
+        path: /var/run/docker.sock
 
   - name: github_binary_release
     image: plugins/github-release
