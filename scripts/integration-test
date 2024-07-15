@@ -1,6 +1,8 @@
 #!/bin/bash
 set -exu
 
+source $(dirname $0)/version
+
 cd $(dirname $0)/../
 
 #source ./.github/workflows/scripts/try.sh
@@ -11,6 +13,16 @@ if [ -z "${ARCH:-}" ] ; then
     ARCH=$(go env GOHOSTARCH)
 fi
 
+# clear the default cluster information
+registry_len=$(k3d registry list -o json | jq '. | length ')
+if [ "${registry_len}" -gt 0 ]; then
+        k3d registry delete k3d-gha
+fi
+cluster_len=$(k3d cluster list -o json | jq '. | length ')
+if [ "${cluster_len}" -gt 0 ]; then
+        k3d cluster delete webhook
+fi
+
 CLUSTER_NAME=webhook K3S_VERSION=v1.28.11-k3s2 ARCH=${ARCH} ./.github/workflows/scripts/setup-cluster.sh
 
 # import image
@@ -19,4 +31,4 @@ k3d image import dist/rancher-webhook-image.tar -c webhook
 # start rancher
 VERSION=2.9 RANCHER_IMAGE_TAG=v2.9-head ./.github/workflows/scripts/start-rancher.sh
 
-IMAGE_REPO=cnrancher/webhook IMAGE_TAG=$(cat dist/image_tag) CLUSTER_NAME=webhook ARCH=${ARCH} ./.github/workflows/scripts/integration-test-ci
+IMAGE_REPO=cnrancher/webhook IMAGE_TAG=${TAG} CLUSTER_NAME=webhook ARCH=${ARCH} ./.github/workflows/scripts/integration-test-ci
